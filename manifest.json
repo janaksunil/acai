@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "Gmail Owner ID and Email Logger",
+  "description": "This extension logs the owner id and email from Gmail.",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "https://mail.google.com/"
+  ],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
