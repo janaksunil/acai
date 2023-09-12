@@ -62,6 +62,7 @@ function checkForDearName(content) {
         if (response.gptResponse) {
           console.log(`GPT response: ${response.gptResponse}`);
           if (response.gptResponse === "0") {
+            console.log("wrong names \n\n\n")
             window.alert(
               "Warning: The name in the email body does not match the receiver's email."
             );
