@@ -1,80 +1,3 @@
-// // content.js
-
-// chrome.runtime.onMessage.addListener(
-//     function(request, sender, sendResponse) {
-//         if( request.action === "log_owner_id_and_email" ) {
-//             let elements = document.getElementsByClassName('aoD hl');
-//             if(!elements.length) {
-//                 console.error('No elements with class "aoD hl" found.');
-//                 return;
-//             }
-//             for(let i = 0; i < elements.length; i++) {
-//                 let spans = elements[i].getElementsByTagName('span');
-//                 if(!spans.length) {
-//                     console.error('No "span" elements found within "aoD hl" element.');
-//                     continue;
-//                 }
-//                 for(let j = 0; j < spans.length; j++) {
-//                     let email = spans[j].getAttribute('email');
-//                     let ownerId = spans[j].textContent; // Get the text content of the span
-//                     if(email && ownerId) {
-//                         console.log(`Here is the email and the owner ID - Email: ${email}, Owner ID: ${ownerId}`);
-//                     } else {
-//                         console.error('Email or owner ID not found in "span" element.');
-//                         console.log(spans[j]); // Log the span element
-//                     }
-//                 }
-//             }
-
-//             // New code for getting the email body
-//             let emailBodyElement = document.querySelector(".Am.Al.editable.LW-avf.tS-tW");
-//             if (emailBodyElement) {
-//                 let emailBody = emailBodyElement.innerText || emailBodyElement.textContent;
-//                 console.log(`Email body content: ${emailBody}`);
-
-//                 chrome.runtime.sendMessage({action: "check_email", emailBody: emailBody}, function(response) {
-//                     console.log(response);
-//                     if(response.email_check) {
-//                         console.log(`Email summary: ${response.email_check}`);
-//                     } else {
-//                         console.error('No summary received from background.js');
-//                     }
-//                 });
-
-//             } else {
-//                 console.error('No elements with class "Am Al editable LW-avf tS-tW" found.');
-//             }
-
-//         } else {
-//             console.error('Unexpected action:', request.action);
-//         }
-//     }
-// );
-
-// Function to check for "Dear [Name]" pattern in the email body.
-// function checkForDearName(content) {
-//   const pattern = /Dear\s+([\w\s]+),?/;
-//   const match = content.match(pattern);
-
-//   if (match && match[1]) {
-//     const name = match[1].trim();
-//     console.log(`Detected 'Dear [Name]' pattern. Name is: ${name}`);
-//     // You can do more here, like comparing it with the recipient's name.
-//   }
-// }
-// function checkForDearName(content) {
-//   const pattern = /Dear\s.{1,100}/;
-//   const match = content.match(pattern);
-
-//   if (match && match[0]) {
-//     const capturedText = match[0];
-//     console.log(`Detected pattern. Captured text is: ${capturedText}`);
-//     // Store the captured text in a final variable
-//     const finalCapturedText = capturedText;
-//     // You can do more here, like analyzing the captured text.
-//   }
-
-// }
 let alreadyCaptured = false;
 let lastContent = "";
 let recipientEmail = "";
@@ -126,20 +49,28 @@ function checkForDearName(content) {
       `All data - Email: ${recipientEmail}, Owner ID: ${ownerId}, Captured Text: ${capturedText}`
     );
     console.log("Sending message to background.js");
-    chrome.runtime.sendMessage({
+    chrome.runtime.sendMessage(
+      {
         action: "process_data",
         data: {
           email: recipientEmail,
           ownerId: ownerId,
-          text: capturedText
-        }
-      }, function(response) {
+          text: capturedText,
+        },
+      },
+      function (response) {
         if (response.gptResponse) {
           console.log(`GPT response: ${response.gptResponse}`);
+          if (response.gptResponse === "0") {
+            window.alert(
+              "Warning: The name in the email body does not match the receiver's email."
+            );
+          }
         } else {
-          console.error('No response received from GPT.');
+          console.error("No response received from GPT.");
         }
-      });
+      }
+    );
   }
 }
 
@@ -178,4 +109,3 @@ function initialize() {
 
 // Run the initialize function when the content script is injected
 initialize();
-
