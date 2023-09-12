@@ -125,7 +125,21 @@ function checkForDearName(content) {
     console.log(
       `All data - Email: ${recipientEmail}, Owner ID: ${ownerId}, Captured Text: ${capturedText}`
     );
-    // Insert your code here to send them somewhere
+    console.log("Sending message to background.js");
+    chrome.runtime.sendMessage({
+        action: "process_data",
+        data: {
+          email: recipientEmail,
+          ownerId: ownerId,
+          text: capturedText
+        }
+      }, function(response) {
+        if (response.gptResponse) {
+          console.log(`GPT response: ${response.gptResponse}`);
+        } else {
+          console.error('No response received from GPT.');
+        }
+      });
   }
 }
 
@@ -164,3 +178,4 @@ function initialize() {
 
 // Run the initialize function when the content script is injected
 initialize();
+

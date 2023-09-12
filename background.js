@@ -7,31 +7,38 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "check_email") {
-        let emailBody = request.emailBody;
+    console.log("Received message from content.js");
+    if (request.action === "process_data") {
+      const { email, ownerId, text } = request.data;
+      const instruction = `Pretend you are a Chrome extension that detects if a user is using the wrong first name when sending an email. You have 3 inputs Receiver's email : ${email} , Owner ID (If applicable) :  ${ownerId},  Email body : ${text}". Use your best judgment, if you think the first name is correct return 1, if you think the user has to be alerted respond with 0, only alert the user if there is no possibility the first name is correct. Prioritize not disturbing the user. Respond with only 1 and 0 no other text.`
 
-        // Use a separate function to handle the email summarization
-        handleEmailSummarization(emailBody, sendResponse);
-
-        // Inform Chrome that we will use sendResponse asynchronously
-        return true;
+  
+      // Call the GPT function
+      generate(instruction).then(response => {
+        // Send the response back to content.js
+        console.log(`GPT response: ${response}`);
+        sendResponse({ gptResponse: response });
+      });
+  
+      // Return true to indicate that we will send the response asynchronously
+      return true;
     }
-});
+  });
 
-const handleEmailSummarization = async (emailBody, sendResponse) => {
-    try {
-        let email_check = await generate(emailBody);
+// const handleEmailSummarization = async (emailBody, sendResponse) => {
+//     try {
+//         let email_check = await generate(emailBody);
 
-        if (email_check && email_check.content) {
-            sendResponse({ email_check: email_check.content });
-        } else {
-            sendResponse({ error: 'No summary generated' });
-        }
-    } catch (error) {
-        console.error("Detailed Error:", error);  // This will log more detailed error info
-        sendResponse({ error: 'Error generating summary' });
-    }
-};
+//         if (email_check && email_check.content) {
+//             sendResponse({ email_check: email_check.content });
+//         } else {
+//             sendResponse({ error: 'No summary generated' });
+//         }
+//     } catch (error) {
+//         console.error("Detailed Error:", error);  // This will log more detailed error info
+//         sendResponse({ error: 'Error generating summary' });
+//     }
+// };
 
 const generate = async (text) => {
     // Get your API key from storage
@@ -43,7 +50,7 @@ const generate = async (text) => {
     const body = {
         model: "gpt-3.5-turbo",
         messages: [
-            { role: "system", content: "You are a helpful assistant." },
+            { role: "system", content: "You are a helpful assistant. Use your best judgement to answer my query. Make sure to be incredibly concise." },
             { role: "user", content: text }
         ]
     };
