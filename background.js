@@ -43,7 +43,7 @@ const generate = async (text) => {
     const body = {
         model: "gpt-3.5-turbo",
         messages: [
-            { role: "system", content: "You are a helpful assistant." },
+            { role: "system", content: "Pretend you are a Chrome extension that detects if a user is using the wrong first name when sending an email. You have 3 inputs. Receiver's email, and Owner's ID (If applicable) : Email body : Dear Shubh, How are you doing? Use your best judgment, if you think the first name is correct return 1, if you think the user has to be alerted respond with 0, only alert the user if there is no possibility the firs tname is correct. Prioritize not disturbing the user. Make sure the default assumes the first name is correct, only overturn the default when there is a glaring mistake. Respond with only 1 and 0 no other text."},
             { role: "user", content: text }
         ]
     };

@@ -30,9 +30,10 @@ chrome.runtime.onMessage.addListener(
             let emailBodyElement = document.querySelector(".Am.Al.editable.LW-avf.tS-tW");
             if (emailBodyElement) {
                 let emailBody = emailBodyElement.innerText || emailBodyElement.textContent;
+                let gptInput = `Here is the Email Address: ${email}, Owner ID: ${ownerId} and Email content ${emailBody}`;
                 console.log(`Email body content: ${emailBody}`);
 
-                chrome.runtime.sendMessage({action: "check_email", emailBody: emailBody}, function(response) {
+                chrome.runtime.sendMessage({action: "check_email", emailBody: gptInput}, function(response) {
                     console.log(response);
                     if(response.email_check) {
                         console.log(`Email summary: ${response.email_check}`);
