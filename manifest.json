@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Gmail Owner ID and Email Logger",
+  "name": "acai",
   "description": "This extension logs the owner id and email from Gmail.",
   "version": "1.0",
   "permissions": ["activeTab", "storage"],
