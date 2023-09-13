@@ -36,7 +36,7 @@ function logEmailAndOwnerId() {
 function checkForDearName(content) {
   if (alreadyCaptured) return;
 
-  if (content.length >= 50) {
+  if (content.length >= 25) {
     capturedText = content.substring(0, 25);
     console.log(`Captured text of 25 characters: ${capturedText}`);
     alreadyCaptured = true;

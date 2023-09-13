@@ -2,7 +2,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Received message from content.js");
   if (request.action === "process_data") {
     const { email, ownerId, text } = request.data;
-    const instruction = `Given the Receiver's email: ${email}, Owner ID (if applicable): ${ownerId}, and Email body: ${text}, please determine the following: 1. Extract the most likely first name or initials from the Receiver's email and Owner ID. Identify the name or initials in the 'Dear [Name]' or similar greeting in the email body. If the name or initials from the email/Owner ID absolutely do not match the name in the email body, return 0. If there's a possibility that they match or there's any ambiguity, return 1. If the email or Owner ID consists of initials or an abbreviation, exercise extreme caution in determining a mismatch. Avoid false positives at all costs; it's better not to alert if unsure. Respond only with 1 or 0, where 1 indicates a possible match or ambiguity and 0 indicates a definite mismatch.Respond with only 1 or 0,nothing else`;
+    const instruction = `Review the given details:
+
+    Email: ${email}
+    Reliable source: Owner ID ${ownerId}
+    Message text: ${text}
+    Steps:
+    
+    Always use the Owner ID first for the primary name. Only if it's unclear, use the email.
+    Spot the name right after greetings in ${text}.
+    Now, decide:
+    If the spotted name and primary name are the same or it's a recognized nickname, return 1.
+    If the spotted name could be initials of the primary name, return 1.
+    If the spotted name is a logical abbreviation of the primary name, return 1.
+    If the spotted name is clearly different from the primary name and none of the above conditions apply, return 0.
+    Your goal: If certain of a mismatch, return 0. If unsure or a match, return 1. Be clear in detecting mismatches.
+    Only respond 0 if ther is a clear mistmatch or typo, otherwise deffault to 1.Respond with a single number.
+    `;
 
     // Call the GPT function
     generate(instruction).then((response) => {
