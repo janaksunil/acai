@@ -34,6 +34,10 @@ function logEmailAndOwnerId() {
 }
 
 function checkForDearName(content) {
+  if (content.length === 0) {
+    alreadyCaptured = false;
+  }
+
   if (alreadyCaptured) return;
 
   if (content.length >= 25) {
