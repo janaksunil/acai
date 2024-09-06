@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 const generate = async (text) => {
   // Get your API key from storage
-  const key = "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";
+  const key = "";
   const url = "https://api.openai.com/v1/chat/completions";
 
   console.log("generating completion...");
